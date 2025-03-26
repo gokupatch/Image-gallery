@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,8 +39,8 @@
 
   <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbxjxidWd3lWwfsd-3zIQclSPUMH_OA98G2_Bb2HK4UwUQLRhEb60NNRTUPQCM9PjRlB/exec";
-    const folderId = "1lo2ZBWnvbXIdZUn54gKV6u4C36IBVAKB"; // ✅ Your Google Drive Folder ID
-    const apiKey = "AIzaSyD9eEH--S9Ku_voXTATQKs9u9GOoii1D3Jo"; // ✅ Your Google API Key
+    const folderId = "1lo2ZBWnvbXIdZUn54gKV6u4C36IBVAKB";
+    const apiKey = "AIzaSyD9eEH--S9Ku_voXTATQKs9u9GOoii1D3Jo";
 
     async function uploadToGoogleDrive() {
       const input = document.getElementById("imageInput");
@@ -49,13 +50,13 @@
       }
 
       for (let file of input.files) {
+        const formData = new FormData();
+        formData.append("file", file, file.name);
+
         try {
           const response = await fetch(scriptURL, {
             method: "POST",
-            body: file,
-            headers: {
-              "Content-Type": file.type
-            }
+            body: formData
           });
 
           const result = await response.json();
@@ -63,7 +64,7 @@
           if (result.success) {
             console.log("Upload success:", result.url);
             alert("Image uploaded successfully!");
-            fetchImages(); // refresh gallery
+            fetchImages();
           } else {
             console.error("Upload failed:", result.error);
             alert("Upload failed: " + result.error);
@@ -82,7 +83,7 @@
       const data = await response.json();
 
       const gallery = document.getElementById("gallery");
-      gallery.innerHTML = ""; // Clear previous
+      gallery.innerHTML = "";
 
       data.files.forEach(file => {
         const img = document.createElement("img");
@@ -91,7 +92,6 @@
       });
     }
 
-    // Load existing images
     fetchImages();
   </script>
 </body>
