@@ -1,57 +1,60 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Upload Image</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; padding: 20px; }
-  </style>
+  <title>Upload Image to Google Drive</title>
 </head>
 <body>
   <h2>Upload Image to Google Drive</h2>
-  <input type="file" id="imageInput" accept="image/*" />
-  <br><br>
+  <input type="file" id="imageInput" />
   <button onclick="upload()">Upload</button>
   <p id="status"></p>
 
   <script>
-  async function upload() {
-    const input = document.getElementById("imageInput");
-    const file = input.files[0];
-    const status = document.getElementById("status");
+    async function upload() {
+      const input = document.getElementById("imageInput");
+      const file = input.files[0];
+      const status = document.getElementById("status");
 
-    if (!file) {
-      status.innerText = "Please select a file.";
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = async function () {
-      const base64Data = reader.result.split(",")[1];
-
-      try {
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzQuaJgfbawWo4bGuTceBd94Zv35nmzjkCCFtybT8VoIpUIjtg-gbsQMow69NYRSMPn/exec", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: `image=${encodeURIComponent(base64Data)}&name=${encodeURIComponent(file.name)}`
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          status.innerHTML = `✅ Uploaded! <a href="${result.url}" target="_blank">View</a>`;
-        } else {
-          status.innerText = "Upload failed: " + result.error;
-        }
-      } catch (err) {
-        status.innerText = "Upload error: " + err.message;
+      if (!file) {
+        status.innerText = "Please select a file.";
+        return;
       }
-    };
 
-    reader.readAsDataURL(file);
-  }
-</script>
+      status.innerText = "Reading file...";
 
+      const reader = new FileReader();
+      reader.onload = async function () {
+        const base64Data = reader.result.split(",")[1];
+
+        const body = `image=${encodeURIComponent(base64Data)}&name=${encodeURIComponent(file.name)}`;
+
+        try {
+          const response = await fetch("https://script.google.com/macros/s/AKfycbzQuaJgfbawWo4bGuTceBd94Zv35nmzjkCCFtybT8VoIpUIjtg-gbsQMow69NYRSMPn/exec", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: body
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            status.innerHTML = `✅ Uploaded successfully! <a href="${result.url}" target="_blank">View File</a>`;
+          } else {
+            status.innerText = "❌ Upload failed: " + result.error;
+          }
+        } catch (err) {
+          status.innerText = "❌ Upload error: " + err.message;
+        }
+      };
+
+      reader.onerror = function () {
+        status.innerText = "❌ Failed to read the file.";
+      };
+
+      reader.readAsDataURL(file);
+    }
+  </script>
 </body>
 </html>
