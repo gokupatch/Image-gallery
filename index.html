@@ -55,7 +55,8 @@
         try {
           const response = await fetch(scriptURL, {
             method: "POST",
-            body: formData
+            body: formData,
+            mode: "cors"  // 👈 this is the fix!
           });
 
           const result = await response.json();
