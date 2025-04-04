@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Image</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; }
+  </style>
+</head>
+<body>
+  <h2>Upload Image to Google Drive</h2>
+  <input type="file" id="imageInput" accept="image/*" />
+  <br><br>
+  <button onclick="upload()">Upload</button>
+  <p id="status"></p>
+
+  <script>
+    function upload() {
+      const input = document.getElementById("imageInput");
+      const file = input.files[0];
+      const status = document.getElementById("status");
+
+      if (!file) {
+        status.innerText = "Please select a file.";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file, file.name);
+
+      fetch("https://script.google.com/macros/s/AKfycbzQuaJgfbawWo4bGuTceBd94Zv35nmzjkCCFtybT8VoIpUIjtg-gbsQMow69NYRSMPn/exec", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          status.innerHTML = `✅ Uploaded: <a href="${data.url}" target="_blank">View original</a><br><a href="${data.wmUrl}" target="_blank">View watermarked</a>`;
+        } else {
+          status.innerText = "Upload failed: " + data.error;
+        }
+      })
+      .catch(err => {
+        status.innerText = "Upload error: " + err;
+      });
+    }
+  </script>
+</body>
+</html>
