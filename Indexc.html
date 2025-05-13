@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Embedded Google Drive HTML</title>
+</head>
+<body>
+  <div id="content">Loading content...</div>
+
+  <script>
+    const fileId = 'https://drive.google.com/file/d/1K7Sy9dDH_a1lGz9cpgKyA-nmc36xpWNA/view?usp=drivesdk'; // Replace with your Drive file ID
+    const apiKey = 'AIzaSyD9eEH--S9Ku_voXTATQKs9u9GOoii1D3Jo'; // Replace with your API Key
+
+    fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${apiKey}`)
+      .then(response => {
+        if (!response.ok) throw new Error("Network response was not ok");
+        return response.text();
+      })
+      .then(data => {
+        document.getElementById('content').innerHTML = data;
+      })
+      .catch(error => {
+        document.getElementById('content').innerText = 'Failed to load content: ' + error;
+      });
+  </script>
+</body>
+</html>
